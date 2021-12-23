@@ -1,37 +1,36 @@
 version: '3.7'
 
 services:
-	base:
-		env_file: ./.env
-		restart: always
-		extra_hosts:
-			- "jsiona.42.fr:127.0.0.1"
+  nginx: 
+    build: ./requirements/nginx
+    container_name: webserver
+    restart: unless-stopped
+    env_file: ./.env
 
-	nginx:
-		extends: 
-			service: base
-		depends_on:
-			- wordpress
-		ports:
-			- "443:443"
-		build:
-			context: ./requirements/nginx
-			dockerfile: Dockerfile
-
-		# networks:
-			# - wordpress
+    ports: 
+      - 443:443
+    networks: 
+      - localhost
+    # depends_on: 
+    #   - wordpress
+    volumes: 
+      - web-root:/var/www/html
+    extra_hosts:
+      - ${USER}.42.fr:127.0.0.1
 
 
-		# volumes:
-			# - .:/var/www/html
-
-		# command:
-		# image:
-
-networks:
-	localhost:
-		driver: "bridge"
 
 volumes: 
-	mysqldata:
-		driver: "local"
+  web-root:
+    driver: local
+    driver_opts:
+      type: none
+      device: ~/data/web
+      o: bind
+
+
+networks:
+  localhost:
+    driver: bridge
+    name: app-network
+
