@@ -5,20 +5,39 @@ services:
     build: ./requirements/nginx
     container_name: webserver
     restart: unless-stopped
-    env_file: ./.env
 
     ports: 
       - 443:443
     networks: 
       - localhost
-    # depends_on: 
-    #   - wordpress
+    depends_on: 
+      - wordpress
     volumes: 
-      - web-root:/var/www/html
+      - web-root:/var/www/wordpress
     extra_hosts:
       - jsiona.42.fr:127.0.0.1
 
+  wordpress:
+    build: ./requirements/wordpress
+    container_name: wordpress
+    restart: unless-stopped
 
+    networks: 
+      - localhost
+    depends_on: 
+      - mariadb
+    volumes:
+      - web-root:/var/www/wordpress
+
+  mariadb:
+    build: ./requirements/mariadb
+    container_name: mariadb
+    restart: unless-stopped
+
+    networks: 
+      - localhost
+    volumes:
+      - mysql:/var/lib/mysql
 
 volumes: 
   web-root:
@@ -27,7 +46,12 @@ volumes:
       type: none
       device: /home/jsiona/data/web
       o: bind
-
+  mysql:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/jsiona/data/mariadb
+      o: bind
 
 networks:
   localhost:
