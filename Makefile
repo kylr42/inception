@@ -1,8 +1,8 @@
 all: up
 
 up: 
-	# @sudo mkdir -p ~/data/mariadb
-	# @sudo mkdir -p ~/data/wordpress
+	@mkdir -p /home/jsiona/data/mariadb
+	@mkdir -p /home/jsiona/data/web
 	@docker-compose -f ./srcs/docker-compose.yml up
 	@printf "Containers running..."
 
@@ -12,19 +12,18 @@ down:
 
 
 clean:
-	@sudo docker stop $(docker ps -qa); 
-	@sudo docker rm $(docker ps -qa);
-	@sudo docker rmi -f $(docker images -qa); 
+	@docker stop $(docker ps -qa); 
+	@docker rm $(docker ps -qa);
+	@docker rmi -f $(docker images -qa); 
 
 fclean: clean
-	@sudo docker volume rm $(docker volume ls -q);
-	@sudo docker network rm $(docker network ls -q) 2>/dev/null
+	@docker volume rm $(docker volume ls -q);
+	@docker network rm $(docker network ls -q) 2>/dev/null
 
-remove: fclean 
-	sudo docker system prune -a --volume
-	sudo docker system prune -a --force
-	sudo rm -Rf ~/data/mariadb
-	sudo rm -Rf ~/data/wordpress
+remove:  
+	docker system prune -a --force
+	rm -Rf ~/data/mariadb
+	rm -Rf ~/data/web
 
 re: fclean all
 
