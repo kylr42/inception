@@ -1,29 +1,29 @@
 all: up
 
 up: 
-	@mkdir -p /home/jsiona/data/mariadb
-	@mkdir -p /home/jsiona/data/web
+	@mkdir -p ~/data/mariadb
+	@mkdir -p ~/data/web
 	@docker-compose -f ./srcs/docker-compose.yml up
-	@printf "Containers running..."
+	@echo "Containers running..."
 
 down: 
 	@docker-compose -f ./srcs/docker-compose.yml down
-	@printf "Containers down success"
+	@echo "Containers down success"
 
 
 clean:
-	@docker stop $(docker ps -qa); 
-	@docker rm $(docker ps -qa);
-	@docker rmi -f $(docker images -qa); 
+	@docker stop $(docker ps -qa) 2>/dev/null || true;
+	@docker rm $(docker ps -qa) 2>/dev/null || true;
+	@docker rmi -f $(docker images -qa) 2>/dev/null || true;
 
 fclean: clean
-	@docker volume rm $(docker volume ls -q);
-	@docker network rm $(docker network ls -q) 2>/dev/null
+	@echo "Docker cleaninig..."
+	@docker volume rm $(docker volume ls -q) 2>/dev/null || true;
+	@docker network rm $(docker network ls -q) 2>/dev/null || true;
 
-remove:  
-	docker system prune -a --force
-	rm -Rf ~/data/mariadb
-	rm -Rf ~/data/web
+remove:		
+	@docker system prune -a --force
+	@rm -rf ~/data
 
 re: fclean all
 

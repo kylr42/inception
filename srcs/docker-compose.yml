@@ -3,11 +3,13 @@ version: '3.7'
 services:
   nginx: 
     build: ./requirements/nginx
-    container_name: webserver
+    container_name: nginx
     restart: unless-stopped
 
     ports: 
       - 443:443
+    env_file:
+      - .env
     networks: 
       - localhost
     depends_on: 
@@ -15,13 +17,15 @@ services:
     volumes: 
       - web-root:/var/www/wordpress
     extra_hosts:
-      - jsiona.42.fr:127.0.0.1
+      - ${DOMAIN_NAME}:127.0.0.1
 
   wordpress:
     build: ./requirements/wordpress
     container_name: wordpress
     restart: unless-stopped
 
+    env_file:
+      - .env
     networks: 
       - localhost
     depends_on: 
@@ -34,23 +38,25 @@ services:
     container_name: mariadb
     restart: unless-stopped
 
+    env_file:
+      - .env
     networks: 
       - localhost
     volumes:
-      - mysql:/var/lib/mysql
+      - sql-root:/var/lib/mysql
 
 volumes: 
   web-root:
     driver: local
     driver_opts:
       type: none
-      device: /home/jsiona/data/web
+      device: ~/data/web
       o: bind
-  mysql:
+  sql-root:
     driver: local
     driver_opts:
       type: none
-      device: /home/jsiona/data/mariadb
+      device: ~/data/mariadb
       o: bind
 
 networks:
